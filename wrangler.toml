@@ -1,9 +1,6 @@
-name = "betterhalf-v1"
-main = "worker.js"
-compatibility_date = "2025-06-01"
+name = "simplyoverthinking"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "waitlist-db"
-database_id = "606b1cb3-0d2b-4aba-8660-bafc77bbfe94"
-
+[env.production]
+name = "simplyoverthinking"
