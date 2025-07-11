@@ -22,7 +22,7 @@ export default {
       }
 
     // API route for waitlist signup
-    if (request.method === 'POST' && url.pathname === '/api/waitlist') {
+    if (request.method === 'POST' && url.pathname === '/api/subscribe') {
         try {
           const { email } = await request.json();
           
@@ -41,7 +41,7 @@ export default {
             // Save to D1 database
             try {
                 await env.DB.prepare(
-                'INSERT INTO waitlist (email, ip_address) VALUES (?, ?)'
+                'INSERT INTO subscribers (email, ip_address) VALUES (?, ?)'
                 ).bind(email, clientIP).run();
             } catch (dbError) {
                 if (dbError.message.includes('UNIQUE constraint failed')) {
@@ -66,9 +66,6 @@ export default {
         }
     }
   
-
-    const logo = 'TBD';
-
     const html = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -129,6 +126,7 @@ export default {
                 z-index: 0;
                 position: absolute;
                 top: 60px;
+                transition: transform 0.2s ease;
             }
 
             .right {
@@ -136,11 +134,19 @@ export default {
                 transform: rotate(30deg);
                 padding-top: 5px;
             }
+
+            .right:hover {
+                transform: scale(1.1) rotate(40deg);
+            }
             
             .left{
                 left: 137px;
                 width: 55px;
                 transform: rotate(-25deg);
+            }
+
+            .left:hover {
+                transform: scale(1.1) rotate(-15deg);
             }
             
             .logo {
@@ -177,6 +183,7 @@ export default {
                 font-size: 24px;
                 color: #1a1a1a;
                 margin-bottom: 20px;
+                margin-top: 50px;
             }
             
             .email-form {
@@ -262,6 +269,31 @@ export default {
                 width:560px;
                 height:315px;
             }
+
+            .listen-buttons-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+                margin-top: 40px;
+            }
+            
+            .listen-button-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .pod-button-img {
+                height: 50px;
+                width: auto;
+                transition: transform 0.2s ease;
+            }
+
+            .pod-button-img:hover {
+                transform: scale(1.1);
+            }
+
                 
             @media (max-width: 480px) {
                 .container {
@@ -339,8 +371,8 @@ export default {
             <iframe src="https://www.youtube.com/embed/videoseries?si=XtaPauo_BvGdhMxA&amp;list=PLepWyRIKbp9HItjh1jjqsMxzSOJDPISuy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             
             <div class="subscribe-container">
-                <img src="/img/andy-head-individual.png" alt="Andy Head" class="dot right" />
-                <img src="/img/cassie-head-individual.png" alt="Cassie Head" class="dot left" />
+                <a href="https://andytrattner.com" target="_blank"><img src="/img/andy-head-individual.png" alt="Andy Head" class="dot right" /></a>
+                <a href="https://mondaychickadee.substack.com" target="_blank"><img src="/img/cassie-head-individual.png" alt="Cassie Head" class="dot left" /></a>
                 <form class="email-form" id="waitlistForm">
                     <input 
                         type="email" 
@@ -357,14 +389,36 @@ export default {
                 </form>
             </div>
 
-            <button>Listen on Spotify</button><br>
-            <button>Listen on Apple Podcasts</button><br>
+            <div class="cta-text">
+                Join us every Friday morn!
+            </div>
+
+            <!-- <button>Listen on Apple Podcasts</button><br>
             <button>Listen on YouTube Music</button>
-            
+            <button href="https://anchor.fm/s/10725562c/podcast/rss">RSS</button> -->
+
+
+
+            <div class="listen-buttons-container">
+
+                <div class="listen-button-wrapper">
+                    <a href="https://open.spotify.com/show/5AGONS4X9fc8eTwgUTdwNR" target="_blank">
+                        <img class="pod-button-img" src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png"/>
+                    </a>
+                </div>
+
+                <div class="listen-button-wrapper">
+                    <a href="https://anchor.fm/s/10725562c/podcast/rss" target="_blank">
+                        <img class="pod-button-img" src="/img/rss.png"/>
+                    </a>
+                </div>
+
+            </div>
+
         </div>
         
         <script>
-            const placeholder_txt = 'learn-more@waitlist.com';
+            const placeholder_txt = 'send-episodes@weekly.plz';
             const form = document.getElementById('waitlistForm');
             const emailInput = document.getElementById('emailInput');
 
@@ -389,7 +443,7 @@ export default {
             
             function showSuccess(email) {
                 console.log('[DEBUG] showSuccess called with email:', email);
-                alert("Thanks for joining! We'll contact " + email + " soon.");
+                alert("Thanks for subscribing! We'll send the next episode to " + email + " in the wee hours this upcoming Friday.");
                 emailInput.value = '';
                 emailInput.placeholder = "You're on the list!";
                 
@@ -428,11 +482,11 @@ export default {
                 
                 // Success - email submission logic
                 try {
-                    console.log('[DEBUG] Making API call to /api/waitlist');
+                    console.log('[DEBUG] Making API call to /api/subscribe');
                     console.log('[DEBUG] Request body:', JSON.stringify({ email }));
 
                     // Call our API endpoint
-                    const response = await fetch('/api/waitlist', {
+                    const response = await fetch('/api/subscribe', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

@@ -8,3 +8,9 @@ name = "simplyoverthinking"
 [assets]
 directory = "./assets"
 binding   = "ASSETS"  
+
+[[d1_databases]] 
+binding = "DB" 
+database_name = "simply-overthinking-subs" 
+database_id = "a8663de5-f210-4ae4-8879-7a5e20856f35"
+
